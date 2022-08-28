@@ -135,8 +135,8 @@ for _ in iter(int, 1): # infinite loop
         item_name = []
         for item in data:
             # item['xmin', 'name', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name']
-            volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin']) # 計算體積
-            if volume >= 129600 and item['confidence'] >= 0.5:   # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
+            volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])    # 計算體積
+            if volume >= 129600 and item['confidence'] >= 0.5:                              # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
                 item_name.append(item['name'])
                 # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
         if item_name:

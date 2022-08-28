@@ -25,6 +25,20 @@ while(True):
     
     #模型使用
     results = model(frame)
+    
+    #紀錄物體
+    data = eval(results.pandas().xyxy[0].to_json(orient="records"))
+    #物體數量
+    item_count = len(data)
+    
+    #物體名稱
+    item_name = []
+    while len(data) != 0:
+        item_name.append(data[0]['name'])
+        data.pop(0)
+    #顯示名稱
+    print(item_name)
+    
     new_frame = np.squeeze(results.render())
     #顯示影像
     cv2.imshow('live', new_frame)

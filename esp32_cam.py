@@ -22,7 +22,7 @@ output_rotate = False
 rotate = 180
 
 #ESP32-CAM
-url="http://192.168.100.6:81/stream"
+url="http://192.168.100.9:81/stream"
 CAMERA_BUFFRER_SIZE=4096
 
 #fps count
@@ -131,12 +131,16 @@ for _ in iter(int, 1): # infinite loop
     item_count = len(data)
     
     #物體名稱
-    item_name = []
-    while len(data):
-        item_name.append(data[0]['name'])
-        data.pop(0)
-        #顯示名稱
-        # print(item_name)
+    if item_count:
+        item_name = []
+        for item in data:
+            # item['xmin', 'name', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name']
+            volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin']) # 計算體積
+            if volume >= 129600 and item['confidence'] >= 0.5:   # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
+                item_name.append(item['name'])
+                # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
+        if item_name:
+            print(item_name)
     
     new_frame = np.squeeze(results.render())
     #顯示影像
@@ -150,5 +154,5 @@ for _ in iter(int, 1): # infinite loop
         if(write_video is True):
             out.release()
         break
-    
+
 cv2.destroyAllWindows()

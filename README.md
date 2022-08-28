@@ -22,6 +22,7 @@
     - https://github.com/ultralytics/yolov5
 
 - Or change the code below:
+
     `model = torch.hub.load(repo_or_dir='yolov5',model='yolov5x',source='local') # s/m/l/x`
     
     to

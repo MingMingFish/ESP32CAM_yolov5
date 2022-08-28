@@ -3,7 +3,7 @@
 
 # Update Notes:
 ## Passed updates
-- Date missing
+- Data missing
 
 ## 20220828
 - Upload Files
@@ -23,7 +23,9 @@
 
 - Or change the code below:
     `model = torch.hub.load(repo_or_dir='yolov5',model='yolov5x',source='local') # s/m/l/x`
+    
     to
+    
     `model = torch.hub.load('ultralytics/yolov5', 'yolov5s') # source = 'github' # as default`
 
 ## Object Models

@@ -34,6 +34,7 @@ if(write_video is True):
 #ESP32-CAM
 url="http://192.168.100.11:81/stream"
 CAMERA_BUFFER_SIZE=4096
+# Set shape of video
 UXGA = 13 # 1600 * 1200
 SXGA = 12 # 1280 * 1024
 HD   = 11 # 1280 *  720
@@ -66,7 +67,6 @@ def printText(bg, txt, color=(0,255,0,0), size=0.7, pos=(0,0), type="Chinese"):
         draw = ImageDraw.Draw(img_pil)
         draw.text(pos,  txt, font = font, fill = (b, g, r, a))
         bg = np.array(img_pil)
-
     return bg
 
 def read_stream():
@@ -82,7 +82,6 @@ def read_stream():
             jpg=bts[jpghead:jpgend+2]
             bts=bts[jpgend+2:]
             break
-
     return jpg
 
 bts=b''
@@ -103,7 +102,7 @@ if __name__ == "__main__":
 
         print('Connected ESP32 from ',url)
 
-        frameID = 0 #fps count
+        # frameID = 0 #fps count
         img = None
 
         if connect_server:
@@ -130,16 +129,6 @@ if __name__ == "__main__":
             
             #print(len(outdata))
             server.send(data)
-
-            # try:
-            #     indata = server.recv(1024)
-            #     print('recv: ' + indata.decode())
-            # except:
-            #     print('No answer from server')
-            #     # # connection closed
-            #     # server.close()
-            #     # print('server closed connection.')
-            #     # break
 
             # fps count
             # frameID += 1

@@ -133,13 +133,13 @@ if __name__ == "__main__":
 
             for _ in iter(int, 1): # infinite loop
                 try:
-                    # try:
-                    #     conn.send('chk'.encode()) # Test connection
-                    # except:
-                    #     cv2.destroyAllWindows()
-                    #     conn.close()
-                    #     print('client closed connection.')
-                    #     break
+                    try:
+                        conn.send('chk'.encode()) # Test connection
+                    except:
+                        cv2.destroyAllWindows()
+                        conn.close()
+                        print('client closed connection.')
+                        break
 
                     frame, (width, height) = catch_stream()
                     if frame is not None:

@@ -2,7 +2,6 @@ import os
 from PIL import ImageFont, ImageDraw, Image
 from urllib.request import urlopen
 import cv2
-import imutils
 import time
 import numpy as np
 import socket
@@ -35,6 +34,13 @@ if(write_video is True):
 #ESP32-CAM
 url="http://192.168.100.11:81/stream"
 CAMERA_BUFFER_SIZE=4096
+UXGA = 13 # 1600 * 1200
+SXGA = 12 # 1280 * 1024
+HD   = 11 # 1280 *  720
+XGA  = 10 # 1024 *  768 
+SVGA = 9  #  800 *  600
+VGA  = 8  #  640 *  480
+urlopen(f'http://192.168.100.11/control?var=framesize&val={HD}')
 
 #fps count
 start = time.time()
@@ -97,7 +103,7 @@ if __name__ == "__main__":
 
         print('Connected ESP32 from ',url)
 
-        frameID = 0
+        frameID = 0 #fps count
         img = None
 
         if connect_server:
@@ -108,12 +114,17 @@ if __name__ == "__main__":
             PORT = 7000
 
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            try:
-                print(f'Connecting Server "{HOST}:{PORT}" ...')
-                server.connect((HOST, PORT))
-            except:
-                print("Server Connection Failed, leaving program...")
-                os._exit(0) #強制結束
+            print(f'Connecting Server "{HOST}:{PORT}" ...')
+            for i in range(10):
+                try:
+                    server.connect((HOST, PORT))
+                    break
+                except:
+                    print(f'Server Connection Failed, Trying again...({i})')
+                    if i == 9:
+                        print("Server Connection Failed, leaving program...")
+                        os._exit(0) #強制結束
+            print('Server Connected, data streaming...')
         for _ in iter(int, 1): # infinite loop:
             data = read_stream()
             
@@ -130,7 +141,8 @@ if __name__ == "__main__":
             #     # print('server closed connection.')
             #     # break
 
-            frameID += 1
-            fps_count(frameID)
+            # fps count
+            # frameID += 1
+            # fps_count(frameID)
     except KeyboardInterrupt:
         print("Application broke down by user")

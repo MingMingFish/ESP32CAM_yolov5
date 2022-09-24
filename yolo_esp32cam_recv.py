@@ -4,7 +4,6 @@ import numpy as np
 import socket
 import os
 from PIL import ImageFont, ImageDraw, Image
-from urllib.request import urlopen
 import imutils
 import time
 
@@ -83,7 +82,6 @@ output_rotate = False
 rotate = 180
 
 #ESP32-CAM
-url="http://192.168.100.9:81/stream"
 CAMERA_BUFFRER_SIZE=4096
 
 #fps count
@@ -95,8 +93,6 @@ if not os.path.exists(os.path.join(outputdir)):
 if(write_video is True):
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     out = cv2.VideoWriter(video_out,fourcc, 20.0, (record_width,record_height))
-
-stream=urlopen(url)
 
 frameID = 0
 frame = None
@@ -113,12 +109,12 @@ if __name__ == "__main__":
             os.mkdir(outputdir)
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         out = cv2.VideoWriter(video_out,fourcc, 20.0, (record_width,record_height))
-    
+
     frameID = 0
     img = None
-    
+
     if connect_server:
-    
+
         HOST = get_ip() #Server IP
         PORT = 7000
 
@@ -131,7 +127,7 @@ if __name__ == "__main__":
             #Start server
             print(f'server start at: {HOST}:{PORT}')
             print('wait for connection...')
-        
+
             conn, addr = server.accept()
             print('connected by ' + str(addr))
 
@@ -149,15 +145,15 @@ if __name__ == "__main__":
                 if frame is not None:
                     if(output_rotate is True):
                         frame = imutils.rotate(frame, rotate)
-                
+
                     #模型使用
                     results = model(frame)
-                    
+
                     #紀錄物體
                     data = eval(results.pandas().xyxy[0].to_json(orient="records"))
                     #物體數量
                     item_count = len(data)
-                    
+
                     #物體名稱
                     if item_count:
                         item_name = []
@@ -169,7 +165,7 @@ if __name__ == "__main__":
                                 # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
                         if item_name:
                             print(item_name)
-                    
+
                     new_frame = np.squeeze(results.render())
                     #顯示影像
                     cv2.imshow('live', new_frame)

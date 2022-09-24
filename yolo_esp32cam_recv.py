@@ -132,49 +132,51 @@ if __name__ == "__main__":
             print('connected by ' + str(addr))
 
             for _ in iter(int, 1): # infinite loop
-
                 try:
-                    conn.send('chk'.encode()) # Test connection
-                except:
-                    cv2.destroyAllWindows()
-                    conn.close()
-                    print('client closed connection.')
+                    # try:
+                    #     conn.send('chk'.encode()) # Test connection
+                    # except:
+                    #     cv2.destroyAllWindows()
+                    #     conn.close()
+                    #     print('client closed connection.')
+                    #     break
+
+                    frame, (width, height) = catch_stream()
+                    if frame is not None:
+                        if(output_rotate is True):
+                            frame = imutils.rotate(frame, rotate)
+
+                        #模型使用
+                        results = model(frame)
+
+                        #紀錄物體
+                        data = eval(results.pandas().xyxy[0].to_json(orient="records"))
+                        #物體數量
+                        item_count = len(data)
+
+                        #物體名稱
+                        if item_count:
+                            item_name = []
+                            for item in data:
+                                # item['xmin', 'name', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name']
+                                volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])    # 計算體積
+                                if volume >= 129600 and item['confidence'] >= 0.5:                              # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
+                                    item_name.append(item['name'])
+                                    # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
+                            if item_name:
+                                print(item_name)
+
+                        new_frame = np.squeeze(results.render())
+                        #顯示影像
+                        cv2.imshow('live', new_frame)
+
+                    #按下 q 鍵離開迴圈
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        #結束錄影
+                        if(write_video is True):
+                            out.release()
+                        break
+                except ConnectionResetError as e:
+                    print(e)
                     break
-
-                frame, (width, height) = catch_stream()
-                if frame is not None:
-                    if(output_rotate is True):
-                        frame = imutils.rotate(frame, rotate)
-
-                    #模型使用
-                    results = model(frame)
-
-                    #紀錄物體
-                    data = eval(results.pandas().xyxy[0].to_json(orient="records"))
-                    #物體數量
-                    item_count = len(data)
-
-                    #物體名稱
-                    if item_count:
-                        item_name = []
-                        for item in data:
-                            # item['xmin', 'name', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name']
-                            volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])    # 計算體積
-                            if volume >= 129600 and item['confidence'] >= 0.5:                              # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
-                                item_name.append(item['name'])
-                                # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
-                        if item_name:
-                            print(item_name)
-
-                    new_frame = np.squeeze(results.render())
-                    #顯示影像
-                    cv2.imshow('live', new_frame)
-
-                #按下 q 鍵離開迴圈
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    #結束錄影
-                    if(write_video is True):
-                        out.release()
-                    break
-
-cv2.destroyAllWindows()
+            cv2.destroyAllWindows()

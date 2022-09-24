@@ -14,7 +14,7 @@ def fileCount(dir):
 
 if not os.path.exists(os.path.join('video')):
     os.mkdir(os.path.join('video'))
-cam_mode = 'net-cam'  # 'webcam' / 'net-cam
+
 write_video = False
 record_width, record_height = 640,480
 video_out = "video/"+"out_"+str(fileCount("video")+1)+".avi"
@@ -83,25 +83,14 @@ def read_stream():
             break
     return img,(width,height)
 
-if cam_mode == 'webcam':
-    #設定攝影機
-    cap = cv2.VideoCapture(0)
-    #判定是否有裝攝影機
-    if not cap.isOpened():
-        print("無法打開相機")
-        exit()
-    #設定解析度
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-elif cam_mode == 'net-cam':
-    if(write_video is True):
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        out = cv2.VideoWriter(video_out,fourcc, 20.0, (record_width,record_height))
-    
-    stream=urlopen(url)
-    
-    frameID = 0
-    frame = None
+if(write_video is True):
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    out = cv2.VideoWriter(video_out,fourcc, 20.0, (record_width,record_height))
+
+stream=urlopen(url)
+
+frameID = 0
+frame = None
 
 #模型設定
 model = torch.hub.load(repo_or_dir='yolov5',model='yolov5x',source='local') # s/m/l/x
@@ -110,17 +99,11 @@ model = torch.hub.load(repo_or_dir='yolov5',model='yolov5x',source='local') # s/
 bts=b''
 # while(True):
 for _ in iter(int, 1): # infinite loop
-    if cam_mode == 'webcam':
-        #擷取影像
-        ret, frame = cap.read()
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
-            break
-    elif cam_mode == 'net-cam':
-        frame, (width, height) = read_stream()
-        if frame is not None:
-            if(output_rotate is True):
-                frame = imutils.rotate(frame, rotate)
+
+    frame, (width, height) = read_stream()
+    if frame is not None:
+        if(output_rotate is True):
+            frame = imutils.rotate(frame, rotate)
     
     #模型使用
     results = model(frame)
@@ -148,9 +131,7 @@ for _ in iter(int, 1): # infinite loop
 
     #按下 q 鍵離開迴圈
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        #關閉該攝影機裝置
-        if cam_mode == 'webcam':
-            cap.release()
+        #結束錄影
         if(write_video is True):
             out.release()
         break

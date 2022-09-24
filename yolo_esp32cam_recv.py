@@ -6,14 +6,7 @@ import os
 from PIL import ImageFont, ImageDraw, Image
 import imutils
 import time
-
-#獲取本機ip
-def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    s.close()
-    return ip
+import GetIP
 
 #已存video數量:
 def fileCount(dir):
@@ -115,8 +108,9 @@ if __name__ == "__main__":
 
     if connect_server:
 
-        HOST = get_ip() #Server IP
-        PORT = 7000
+        EX_IP = GetIP.get_external_ip()
+        HOST  = GetIP.get_internal_ip() #Server IP
+        PORT  = 7000
 
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -125,7 +119,8 @@ if __name__ == "__main__":
 
         for _ in iter(int, 1): # infinite loop
             #Start server
-            print(f'server start at: {HOST}:{PORT}')
+            print(f'External IP: {EX_IP}')
+            print(f'Server start at: {HOST}:{PORT}')
             print('wait for connection...')
 
             conn, addr = server.accept()

@@ -65,8 +65,8 @@ def catch_stream():
             #p=cv2.flip(img,-1)    
             #frame=p
             height,width=img.shape[:2]
-            img=cv2.resize(img,(record_width, record_height))
-            print(img.shape)
+            # img=cv2.resize(img,(record_width, record_height))
+            # print(img.shape)
         except:
             img = None
             print("unfound JPG.")
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
             conn, addr = server.accept()
             print('connected by ' + str(addr))
-
+            
             for _ in iter(int, 1): # infinite loop
                 try:
                     try:
@@ -142,6 +142,7 @@ if __name__ == "__main__":
                         break
 
                     frame, (width, height) = catch_stream()
+                    alert_vol = (width*height)//4
                     if frame is not None:
                         if(output_rotate is True):
                             frame = imutils.rotate(frame, rotate)
@@ -160,7 +161,7 @@ if __name__ == "__main__":
                             for item in data:
                                 # item['xmin', 'name', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name']
                                 volume = int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])    # 計算體積
-                                if volume >= 129600 and item['confidence'] >= 0.5:                              # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
+                                if volume >= alert_vol and item['confidence'] >= 0.5:                              # 只記錄 體積大於[360*360=129600] & 可信度>=0.5 的物件
                                     item_name.append(item['name'])
                                     # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
                             if item_name:

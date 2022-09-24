@@ -1,9 +1,7 @@
 import os
-from PIL import ImageFont, ImageDraw, Image
+
 from urllib.request import urlopen
-import cv2
 import time
-import numpy as np
 import socket
 
 #獲取本機ip
@@ -52,22 +50,6 @@ def fps_count(num_frames):
     fps  = num_frames / seconds;
     print("Estimated frames per second : {0}".format(fps))
     return fps
-
-def printText(bg, txt, color=(0,255,0,0), size=0.7, pos=(0,0), type="Chinese"):
-    (b,g,r,a) = color
-
-    if(type=="English"):
-        cv2.putText(bg,  txt, pos, cv2.FONT_HERSHEY_SIMPLEX, size,  (b,g,r), 2, cv2.LINE_AA)
-
-    else:
-        ## Use simsum.ttf to write Chinese.
-        fontpath = "fonts/wt009.ttf"
-        font = ImageFont.truetype(fontpath, int(size*10*4))
-        img_pil = Image.fromarray(bg)
-        draw = ImageDraw.Draw(img_pil)
-        draw.text(pos,  txt, font = font, fill = (b, g, r, a))
-        bg = np.array(img_pil)
-    return bg
 
 def read_stream():
     global bts

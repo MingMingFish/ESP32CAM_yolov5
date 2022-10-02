@@ -1,4 +1,3 @@
-from msilib.schema import Directory
 import os
 from urllib.request import urlopen
 import time

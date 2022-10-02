@@ -7,17 +7,6 @@ from concurrent import futures  # threads module
 #pip install playsound==1.2.2   ## 1.3.0 doesn't work properly
 from playsound import playsound
 
-item_index = [ # default index of yolov5
-    'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-    'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
-    'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-    'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard',
-    'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-    'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-    'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard',
-    'cell phone','microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
-    'scissors', 'teddy bear', 'hair drier', 'toothbrush' ]
-
 #獲取本機ip
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -47,6 +36,11 @@ if(write_video is True):
 url = 'http://192.168.100.8'
 stream_url= f"{url}:81/stream"
 CAMERA_BUFFER_SIZE=4096
+
+#Server
+HOST = '192.168.100.7' #get_ip() # The Server IP
+PORT = 7000
+
 # Set shape of video
 UXGA = 13 # 1600 * 1200
 SXGA = 12 # 1280 * 1024
@@ -114,7 +108,6 @@ def send_stream():
     for _ in iter(int, 1): # infinite loop:
             data = read_stream()
             server_recv.send(data)
-
             # fps count:
             # frameID += 1
             # fps_count(frameID)
@@ -134,22 +127,16 @@ if __name__ == "__main__":
                     continue
                 else:
                     os._exit(0)
-
         print('Connected ESP32 from ',stream_url)
 
         # frameID = 0 #fps count
         img = None
 
         if connect_server:
-            #!/usr/bin/env python3
-            # -*- coding: utf-8 -*-
-
-            HOST = '192.168.100.7' #get_ip() #Server IP
-            PORT = 7000
-
             server_recv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_send = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print(f'Connecting Server "{HOST}:{PORT}" ...')
+
             for i in range(10):
                 try:
                     server_recv.connect((HOST, PORT))
@@ -163,7 +150,7 @@ if __name__ == "__main__":
             print('Server Connected, data streaming...')
         
         future_list = []
-        with futures.ThreadPoolExecutor(max_workers=6) as executor: #
+        with futures.ThreadPoolExecutor() as executor: #max_workers=2
             future = executor.submit(send_stream)
             future_list.append(future)
             future = executor.submit(play_audio)

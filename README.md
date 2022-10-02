@@ -19,6 +19,15 @@
     - Change alert size to auto culculate by 1/4 of total volume
     - Took off all of codes about picture process in client app (opencv, PIL, etc.)
     - Made client app available on mobile device.
+## 20221002
+- Add playsound module to play audio files.
+- Uploaded mp3 files of detect objects.
+- Made program run with different threads for sending and receiving data.
+- When run on Android, playsound module doesn't work, so switch to use sl4a for android app. (kept two version of programs)
+- Still got a big bug to fix:
+    - mediaPlay is not working:
+    - When use parameter: play=True(which is default), the program stocked.
+    - If not, the program keep running but no sounds was played.
 
 # Notes:
 ## Environments

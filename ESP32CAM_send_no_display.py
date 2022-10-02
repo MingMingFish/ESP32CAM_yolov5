@@ -1,8 +1,10 @@
+from msilib.schema import Directory
 import os
-
 from urllib.request import urlopen
 import time
 import socket
+#pip install playsound
+from playsound import playsound
 
 #獲取本機ip
 def get_ip():
@@ -66,6 +68,9 @@ def read_stream():
             break
     return jpg
 
+def get_result():
+    return server_send.recv(1024).decode('utf-8')
+
 bts=b''
 if __name__ == "__main__":
     try:
@@ -94,11 +99,13 @@ if __name__ == "__main__":
             HOST = '192.168.100.7' #get_ip() #Server IP
             PORT = 7000
 
-            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server_recv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server_send = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print(f'Connecting Server "{HOST}:{PORT}" ...')
             for i in range(10):
                 try:
-                    server.connect((HOST, PORT))
+                    server_recv.connect((HOST, PORT))
+                    server_send.connect((HOST, PORT+1))
                     break
                 except:
                     print(f'Server Connection Failed, Trying again...({i})')
@@ -106,11 +113,23 @@ if __name__ == "__main__":
                         print("Server Connection Failed, leaving program...")
                         os._exit(0) #強制結束
             print('Server Connected, data streaming...')
+        temp = []
+        timer = time.time()
         for _ in iter(int, 1): # infinite loop:
             data = read_stream()
-            
             #print(len(outdata))
-            server.send(data)
+            server_recv.send(data)
+            play = get_result()
+            if play != 'None':
+                if not play in temp:
+                    temp.append(play)
+                    try:
+                        playsound(os.path.join('audio', play+'.mp3'))
+                    except Exception as e:
+                        print(e)
+                elif time.time() - timer >= 5:
+                    temp.pop(play)
+            
 
             # fps count
             # frameID += 1

@@ -39,7 +39,7 @@ def printText(bg, txt, color=(0,255,0,0), size=0.7, pos=(0,0), type="Chinese"):
 def catch_stream():
     global bts
 
-    bts+= conn.recv(4096)
+    bts+= conn_recv.recv(4096)
     
     jpghead=bts.find(b'\xff\xd8')
     jpgend=bts.find(b'\xff\xd9')
@@ -112,27 +112,37 @@ if __name__ == "__main__":
         HOST  = GetIP.get_internal_ip() #Server IP
         PORT  = 7000
 
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.bind((HOST, PORT))
-        server.listen(5)
+        server_recv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_recv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_recv.bind((HOST, PORT))
+        server_recv.listen(5)
+
+        server_send = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_send.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_send.bind((HOST, PORT+1))
+        server_send.listen(5)
 
         for _ in iter(int, 1): # infinite loop
             #Start server
             print(f'External IP: {EX_IP}')
-            print(f'Server start at: {HOST}:{PORT}')
+            print(f'Server start at: {HOST}:{PORT},', PORT+1)
+            
             print('wait for connection...')
-
-            conn, addr = server.accept()
-            print('connected by ' + str(addr))
+            conn_recv, addr0 = server_recv.accept()
+            print('Camera connected by ' + str(addr0))
+            
+            print('Wait for receiver connecting...')
+            conn_send, addr1 = server_send.accept()
+            print('Receiver connected by ' + str(addr1))
             
             for _ in iter(int, 1): # infinite loop
                 try:
                     try:
-                        conn.send('chk'.encode()) # Test connection
+                        conn_recv.send('chk'.encode()) # Test connection
                     except:
                         cv2.destroyAllWindows()
-                        conn.close()
+                        conn_recv.close()
+                        conn_send.close()
                         print('client closed connection.')
                         break
 
@@ -161,6 +171,10 @@ if __name__ == "__main__":
                                     # print(f"{item['name']}: {int(item['xmax'] - item['xmin']) * int(item['ymax'] - item['ymin'])}")
                             if item_name:
                                 print(item_name)
+                                for n in item_name:
+                                    conn_send.send(n.encode())
+                            else:
+                                conn_send.send('None'.encode())
 
                         new_frame = np.squeeze(results.render())
                         #顯示影像

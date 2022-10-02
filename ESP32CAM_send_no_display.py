@@ -90,11 +90,11 @@ def play_audio():
     for _ in iter(int, 1): # infinite loop:
         play = get_result()
         if play != 'None':
-            print('Having:', temp)
             if not play in temp:
                 temp.append(play)
-                playsound(os.path.join('audio', play+'.mp3'))
+                print(f'Having: {temp}')
                 print(f'Detect: {play}')
+                playsound(os.path.join('audio', play+'.mp3'))
             elif time.time() - timer >= 5:
                 temp.remove(play)
                 timer = time.time()

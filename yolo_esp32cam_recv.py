@@ -172,9 +172,9 @@ if __name__ == "__main__":
                             if item_name:
                                 print(item_name)
                                 for n in item_name:
-                                    conn_send.send(n.encode())
+                                    conn_send.send((n+'\n').encode())
                             else:
-                                conn_send.send('None'.encode())
+                                conn_send.send('None\n'.encode())
 
                         new_frame = np.squeeze(results.render())
                         #顯示影像

@@ -3,8 +3,20 @@ import os
 from urllib.request import urlopen
 import time
 import socket
-#pip install playsound
+from concurrent import futures  # threads module
+#pip install playsound==1.2.2   ## 1.3.0 doesn't work properly
 from playsound import playsound
+
+item_index = [ # default index of yolov5
+    'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
+    'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
+    'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+    'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard',
+    'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+    'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+    'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard',
+    'cell phone','microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+    'scissors', 'teddy bear', 'hair drier', 'toothbrush' ]
 
 #獲取本機ip
 def get_ip():
@@ -32,7 +44,8 @@ if(write_video is True):
     video_num = str(fileCount("video")+1)
 
 #ESP32-CAM
-url="http://192.168.100.11:81/stream"
+url = 'http://192.168.100.8'
+stream_url= f"{url}:81/stream"
 CAMERA_BUFFER_SIZE=4096
 # Set shape of video
 UXGA = 13 # 1600 * 1200
@@ -41,7 +54,7 @@ HD   = 11 # 1280 *  720
 XGA  = 10 # 1024 *  768 
 SVGA = 9  #  800 *  600
 VGA  = 8  #  640 *  480
-urlopen(f'http://192.168.100.11/control?var=framesize&val={HD}')
+urlopen(f'{url}/control?var=framesize&val={HD}')
 
 #fps count
 start = time.time()
@@ -69,15 +82,50 @@ def read_stream():
     return jpg
 
 def get_result():
-    return server_send.recv(1024).decode('utf-8')
+    string = ''
+    for _ in iter(int, 1): # infinite loop:
+        data = server_send.recv(1).decode()
+        if data =='\n':
+            break
+        else:
+            string += data
+    return string
+
+def play_audio():
+    temp = []
+    timer = time.time()
+    for _ in iter(int, 1): # infinite loop:
+        play = get_result()
+        if play != 'None':
+            print('Having:', temp)
+            if not play in temp:
+                temp.append(play)
+                playsound(os.path.join('audio', play+'.mp3'))
+                print(f'Detect: {play}')
+            elif time.time() - timer >= 5:
+                temp.remove(play)
+                timer = time.time()
+        elif play == 'None':
+            print('None')
+        else:
+            print('Exception:', play)
+
+def send_stream():
+    for _ in iter(int, 1): # infinite loop:
+            data = read_stream()
+            server_recv.send(data)
+
+            # fps count:
+            # frameID += 1
+            # fps_count(frameID)
 
 bts=b''
 if __name__ == "__main__":
     try:
         for _ in iter(int, 1): # infinite loop:
             try:
-                print('Connecting ESP32-CAM from ',url)
-                stream=urlopen(url)
+                print('Connecting ESP32-CAM from ',stream_url)
+                stream=urlopen(stream_url)
                 break
             except:
                 print("Connect Failed.")
@@ -87,7 +135,7 @@ if __name__ == "__main__":
                 else:
                     os._exit(0)
 
-        print('Connected ESP32 from ',url)
+        print('Connected ESP32 from ',stream_url)
 
         # frameID = 0 #fps count
         img = None
@@ -113,26 +161,15 @@ if __name__ == "__main__":
                         print("Server Connection Failed, leaving program...")
                         os._exit(0) #強制結束
             print('Server Connected, data streaming...')
-        temp = []
-        timer = time.time()
-        for _ in iter(int, 1): # infinite loop:
-            data = read_stream()
-            #print(len(outdata))
-            server_recv.send(data)
-            play = get_result()
-            if play != 'None':
-                if not play in temp:
-                    temp.append(play)
-                    try:
-                        playsound(os.path.join('audio', play+'.mp3'))
-                    except Exception as e:
-                        print(e)
-                elif time.time() - timer >= 5:
-                    temp.pop(play)
-            
-
-            # fps count
-            # frameID += 1
-            # fps_count(frameID)
+        
+        future_list = []
+        with futures.ThreadPoolExecutor(max_workers=6) as executor: #
+            future = executor.submit(send_stream)
+            future_list.append(future)
+            future = executor.submit(play_audio)
+            future_list.append(future)
+        threads = futures.as_completed(fs=future_list)
     except KeyboardInterrupt:
+        server_recv.close()
+        server_send.close()
         print("Application broke down by user")

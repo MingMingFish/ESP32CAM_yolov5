@@ -28,6 +28,8 @@
     - mediaPlay is not working:
     - When use parameter: play=True(which is default), the program stocked.
     - If not, the program keep running but no sounds was played.
+## 20221002
+- esp32 connection bug fix
 
 # Notes:
 ## Environments

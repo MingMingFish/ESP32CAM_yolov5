@@ -32,12 +32,12 @@ if(write_video is True):
     video_num = str(fileCount("video")+1)
 
 #ESP32-CAM
-url = 'http://192.168.100.8'
+url = 'http://192.168.1.101'
 stream_url= f"{url}:81/stream"
 CAMERA_BUFFER_SIZE=4096
 
 #Server
-HOST = '192.168.100.7' #get_ip() # The Server IP
+HOST = '118.150.187.179' # '192.168.94.211' # '192.168.100.7' #get_ip() # The Server IP
 PORT = 7000
 
 # Set shape of video
@@ -47,7 +47,6 @@ HD   = 11 # 1280 *  720
 XGA  = 10 # 1024 *  768 
 SVGA = 9  #  800 *  600
 VGA  = 8  #  640 *  480
-urlopen(f'{url}/control?var=framesize&val={HD}')
 
 #fps count
 start = time.time()
@@ -117,6 +116,7 @@ if __name__ == "__main__":
         for _ in iter(int, 1): # infinite loop:
             try:
                 print('Connecting ESP32-CAM from ',stream_url)
+                urlopen(f'{url}/control?var=framesize&val={HD}') # set graph quality
                 stream=urlopen(stream_url)
                 break
             except:

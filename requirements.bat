@@ -15,6 +15,16 @@ echo "download yolov5 and put in same dir, rename to \'yolov5\'"
 pause
 
 mkdir video
+
+pip install numpy==1.20.0
+pip install opencv-python
+pip install Pillow
+pip install PyYAML
+pip install scipy
+pip install torch==1.8.0
+pip install torchvision==0.9.1
+pip install tensorboard
+
 pip install beautifulsoup4
 pip install requests
 pip install html5lib

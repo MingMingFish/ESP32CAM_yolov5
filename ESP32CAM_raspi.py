@@ -1,4 +1,3 @@
-import warnings
 import os
 import time
 import numpy as np
@@ -11,7 +10,7 @@ import pygame
 pygame.init()
 
 #ESP32-CAM
-url = 'http://192.168.131.134'
+url = 'http://192.168.1.102'
 stream_url= f"{url}:81/stream"
 CAMERA_BUFFER_SIZE=4096
 
@@ -24,7 +23,7 @@ SVGA = 9  #  800 *  600
 VGA  = 8  #  640 *  480
 
 #set/load yolov5 model
-model = torch.hub.load(repo_or_dir='yolov5',model='yolov5n',source='local') # n/s/m/l/x
+model = torch.hub.load(repo_or_dir='yolov5',model='yolov5s',source='local') # n/s/m/l/x
 
 def read_stream():
     global bts
@@ -52,7 +51,6 @@ timers = {}
 bts = b''
 
 if __name__ == "__main__":
-    warnings.simplefilter("ignore")
     try:
         for _ in iter(int, 1): # infinite loop:
             try:

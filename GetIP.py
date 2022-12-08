@@ -30,8 +30,4 @@ def get_external_ip(url = 'https://www.whatismyip.com.tw'):
     return ip
 
 def get_internal_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    s.close()
-    return ip
+    return socket.gethostbyname(socket.gethostname())

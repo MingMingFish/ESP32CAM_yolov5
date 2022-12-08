@@ -69,10 +69,13 @@ def catch_stream():
 connect_server=True
 write_video = False
 record_width, record_height = 640,480
-outputdir = "video"
-video_out = "video/"+"out_"+str(fileCount("video")+1)+".avi"
 output_rotate = False
 rotate = 180
+if write_video:
+    outputdir = "video"
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
+    video_out = "video/"+"out_"+str(fileCount("video")+1)+".avi"
 
 #ESP32-CAM
 CAMERA_BUFFRER_SIZE=4096

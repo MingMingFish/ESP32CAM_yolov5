@@ -4,7 +4,6 @@
     # Install CUDA and CUDNN
     # Run all of these in Anaconda enviroment
     # install pytorch -version==1.10.0
-    # mkdir video
 
 # Choose the Commend by CUDA version
 # CUDA 10.2

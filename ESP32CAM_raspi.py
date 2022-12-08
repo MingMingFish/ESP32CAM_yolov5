@@ -1,3 +1,4 @@
+from socket import gethostbyname
 import os
 import time
 import numpy as np
@@ -10,9 +11,10 @@ import pygame
 pygame.init()
 
 #ESP32-CAM
-url = 'http://192.168.1.102'
-stream_url= f"{url}:81/stream"
-CAMERA_BUFFER_SIZE=4096
+ip = gethostbyname('MyVisualHat') # '192.168.1.102'
+url = f'http://{ip}'
+stream_url= f'{url}:81/stream'
+CAMERA_BUFFER_SIZE = 4096
 
 # Set shape of video
 UXGA = 13 # 1600 * 1200

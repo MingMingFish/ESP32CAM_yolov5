@@ -13,7 +13,7 @@ pygame.init()
 #ESP32-CAM
 # ip = '192.168.1.102' # Give the IP directly
 # ip = gethostbyname('MyVisualHat') # Find the IP by name
-ip = gethostbyname('MyVisualHat.local') # '.local' is requested in raspberry pi
+ip = gethostbyname('MyVisualHat.local') # '.local' is requested on raspberry pi
 
 url = f'http://{ip}'
 stream_url= f'{url}:81/stream'

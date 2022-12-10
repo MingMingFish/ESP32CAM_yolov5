@@ -11,7 +11,10 @@ import pygame
 pygame.init()
 
 #ESP32-CAM
-ip = gethostbyname('MyVisualHat') # '192.168.1.102'
+# ip = '192.168.1.102' # Give the IP directly
+# ip = gethostbyname('MyVisualHat') # Find the IP by name
+ip = gethostbyname('MyVisualHat.local') # '.local' is requested in raspberry pi
+
 url = f'http://{ip}'
 stream_url= f'{url}:81/stream'
 CAMERA_BUFFER_SIZE = 4096

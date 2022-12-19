@@ -32,6 +32,7 @@
 - esp32 connection bug fix
 ## 20221123
 - Added a simplified version for raspberry pi 
+- Use pygame to play sounds
 
 ## 20221125
 - Update requirements file 
@@ -48,7 +49,7 @@
 - Issue solve - '.local' is requested on raspi when finding the IP by hostname
 ## 20221219
 - Update README.md
-- This program has frozen temporary. Contect me if you have any questions.
+- This project has frozen temporary. Contect me if you have any questions.
 
 # Notes:
 ## Environments

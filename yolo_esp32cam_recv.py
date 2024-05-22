@@ -125,7 +125,7 @@ if __name__ == "__main__":
         server_send.bind((HOST, PORT+1))
         server_send.listen(5)
 
-        for _ in iter(int, 1): # infinite loop
+        while True: # infinite loop
             #Start server
             print(f'External IP: {EX_IP}')
             print(f'Server start at: {HOST}:{PORT},', PORT+1)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
             conn_send, addr1 = server_send.accept()
             print('Receiver connected by ' + str(addr1))
             
-            for _ in iter(int, 1): # infinite loop
+            while True: # infinite loop
                 try:
                     try:
                         conn_recv.send('chk'.encode()) # Test connection

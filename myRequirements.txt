@@ -1,0 +1,20 @@
+pip install Cython
+pip install numpy
+pip install opencv-python
+pip install matplotlib
+pip install pillow
+pip install tensorboard
+pip install PyYAML
+pip install torchvision
+pip install scipy
+pip install tqdm
+
+pip install bs4
+pip install flask
+pip install imutils
+pip install pandas
+pip install seaborn
+pip install beautifulsoup4
+pip install html5lib
+pip install playsound==1.2.2
+pip install pygame

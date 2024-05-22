@@ -61,7 +61,7 @@ def fps_count(num_frames):
 def read_stream():
     global bts
 
-    for _ in iter(int, 1): # infinite loop:
+    while True: # infinite loop:
         bts+=stream.read(CAMERA_BUFFER_SIZE)
         jpghead=bts.find(b'\xff\xd8')
         jpgend=bts.find(b'\xff\xd9')
@@ -75,7 +75,7 @@ def read_stream():
 
 def get_result():
     string = ''
-    for _ in iter(int, 1): # infinite loop:
+    while True: # infinite loop:
         data = server_send.recv(1).decode()
         if data =='\n':
             break
@@ -86,7 +86,7 @@ def get_result():
 def play_audio():
     temp = []
     timer = time.time()
-    for _ in iter(int, 1): # infinite loop:
+    while True: # infinite loop:
         play = get_result()
         if play != 'None':
             if not play in temp:
@@ -113,7 +113,7 @@ def send_stream():
 bts=b''
 if __name__ == "__main__":
     try:
-        for _ in iter(int, 1): # infinite loop:
+        while True: # infinite loop:
             try:
                 print('Connecting ESP32-CAM from ',stream_url)
                 urlopen(f'{url}/control?var=framesize&val={HD}') # set graph quality

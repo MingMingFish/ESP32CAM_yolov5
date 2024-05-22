@@ -32,7 +32,7 @@ model = torch.hub.load(repo_or_dir='yolov5',model='yolov5s',source='local') # n/
 
 def read_stream():
     global bts
-    for _ in iter(int, 1):
+    while True:
         bts += stream.read(CAMERA_BUFFER_SIZE)
         jpghead = bts.find(b'\xff\xd8')
         jpgend = bts.find(b'\xff\xd9')
@@ -57,7 +57,7 @@ bts = b''
 
 if __name__ == "__main__":
     try:
-        for _ in iter(int, 1): # infinite loop:
+        while True: # infinite loop:
             try:
                 print('Connecting ESP32-CAM from',stream_url)
                 urlopen(f'{url}/control?var=framesize&val={VGA}') # set graph quality
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                     os._exit(0)
         print('Connected ESP32 from',stream_url)
 
-        for _ in iter(int, 1): # infinite loop:
+        while True: # infinite loop:
             frame, (width, height) = read_stream()
             alert_vol = (width*height)//4
 
@@ -89,7 +89,8 @@ if __name__ == "__main__":
                 if volume >= alert_vol and item['confidence'] >= 0.5:
                     items_name.append(item['name'])
                     if time.time() - timers.setdefault(item['name'], time.time()) >= 3:
-                        timers[item['name']] = time.time()
+                        # timers[item['name']] = time.time()
+                        timers.update({item['name'] : time.time()})
                         try:
                             sound = pygame.mixer.Sound(os.path.join('audio', item['name'] + '.mp3'))
                         except FileNotFoundError:
